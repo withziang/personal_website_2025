@@ -1,26 +1,24 @@
-import "./globals.css";
-import { Metadata } from "next";
-import { Providers } from "./providers"; // wraps ThemeProvider etc.
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import type { Metadata } from 'next';
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
+import './globals.css';
+import Navbar from '@/components/Navbar'; // Import the Navbar
 
 export const metadata: Metadata = {
-    title: "Ziang Wang | Software Engineer",
-    description: "Personal site, projects, and blog by Ziang Wang.",
+    title: 'Ziang - Backend & Systems Developer',
+    description: 'Specializing in C++, Backend Systems, and Low-Level Programming.',
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: {
-    children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode; }>) {
     return (
-        <html lang="en" suppressHydrationWarning>
-        <body className="bg-white text-darter-navy dark:bg-darter-dark-gray dark:text-white">
-        <Providers>
-            <Navbar/>
-            <main className="mx-auto max-w-5xl px-4">{children}</main>
-        </Providers>
+        <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} dark bg-linear-bg`}>
+        <body>
+        <div id="top">
+            <Navbar />
+            <main className="w-full max-w-6xl mx-auto px-4 pb-8 md:pb-16">
+                {children}
+            </main>
+        </div>
         </body>
         </html>
     );

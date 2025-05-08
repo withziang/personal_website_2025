@@ -1,16 +1,13 @@
-import { Post } from "@/types";
+import { Post } from '@/types';
 
-export const posts: Post[] = [
+export const postsData: Post[] = [
     {
-        title: "Building a Quant SWE Skill‑set at McGill",
-        excerpt: "How coursework, internships, and side‑projects line up with prop‑trading roles.",
-        slug: "quant-swe-skillset",
-        date: "2025-04-30",
-    },
-    {
-        title: "Shipping a Kernel Driver as a Student—What I Learned",
-        excerpt: "From WHQL signing to crash dumps and why UX still matters.",
-        slug: "shipping-kernel-driver",
-        date: "2025-03-10",
-    },
+        id: '1',
+        title: 'xxx',
+        date: '2024-07-15',
+        excerpt: 'xxx',
+        imageUrl: '/placeholder-blog-1.jpg', // Replace with actual image path
+        slug: 'future-of-web-animation',
+        featured: true,
+    }
 ];

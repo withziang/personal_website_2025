@@ -1,120 +1,133 @@
-"use client";
+// src/components/Navbar.tsx
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import { useState, useEffect } from "react";
-import { ThemeToggle } from "./ThemeToggle";
-import { FaBars, FaTimes } from "react-icons/fa";
-import { HoverLift } from "./animations";
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { FiMenu, FiX, FiGithub, FiLinkedin } from 'react-icons/fi'; // Using specific icons
+import { motion, AnimatePresence } from 'framer-motion';
 
-const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
-    { href: "/projects", label: "Projects" },
-    { href: "/blog", label: "Blog" },
+const navItems = [
+    { name: 'Skills', path: '#skills' },
+    { name: 'Projects', path: '#projects' },
+    { name: 'Interests', path: '#interests' },
+    { name: 'Blogs', path: '/blogs' },
 ];
 
-export const Navbar = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
-    const closeSidebar = () => setIsSidebarOpen(false);
+export default function Navbar() {
+    const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
-        document.body.style.overflow = isSidebarOpen ? "hidden" : "unset";
-        return () => {
-            document.body.style.overflow = "unset";
-        };
-    }, [isSidebarOpen]);
+    const toggleMenu = () => setIsOpen(!isOpen);
+
+    const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
+        setIsOpen(false);
+        if (path.startsWith('#')) {
+            e.preventDefault();
+            const targetId = path.substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                // Offset slightly for the fixed navbar height
+                const offset = 80; // Adjust as needed
+                const bodyRect = document.body.getBoundingClientRect().top;
+                const elementRect = targetElement.getBoundingClientRect().top;
+                const elementPosition = elementRect - bodyRect;
+                const offsetPosition = elementPosition - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    };
 
     return (
-        <>
-            {/* ===== Header ===== */}
-            <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-darter-dark-gray bg-white/90 dark:bg-darter-dark-gray/90 backdrop-blur">
-                <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-                    {/* Logo */}
-                    <Link
-                        href="/"
-                        onClick={closeSidebar}
-                        className="flex items-center gap-2 text-xl font-bold text-darter-navy dark:text-white hover:opacity-80 transition-opacity"
-                    >
-                        <span>ZW • Dev</span>
+        <nav
+            className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 h-16
+                  bg-transparent`}
+        >
+            <div className="w-full max-w-6xl mx-auto px-4 h-full">
+                <div className="flex items-center justify-between h-full">
+                    {/* Left: Logo */}
+                    <Link href="/" className="flex items-center text-sm font-medium text-linear-text-primary">
+                        {/* Simplified Logo (replace with SVG later if needed) */}
+                        <span className="w-5 h-5 mr-2 rounded-full bg-gradient-to-br from-linear-accent to-accent-cyan"></span>
+                        Ziang Wang
                     </Link>
 
-                    {/* Desktop Nav */}
-                    <div className="hidden md:flex items-center gap-6 text-sm font-medium">
-                        {navLinks.map(({ href, label }) => (
-                            <HoverLift key={href}>
+                    {/* Center: Desktop Nav Links */}
+                    <div className="hidden md:flex items-center absolute left-1/2 transform -translate-x-1/2">
+                        <div className="flex items-center space-x-2 bg-linear-gray-medium/50 border border-linear-border rounded-full px-2 py-1">
+                            {navItems.map((item) => (
                                 <Link
-                                    href={href}
-                                    className="text-darter-gray dark:text-gray-300 hover:text-darter-blue dark:hover:text-white transition-colors"
+                                    key={item.name}
+                                    href={item.path}
+                                    onClick={(e) => handleLinkClick(e, item.path)}
+                                    className="px-3 py-1 rounded-full text-xs font-medium text-linear-text-secondary hover:bg-white/5 hover:text-linear-text-primary transition-colors duration-150"
                                 >
-                                    {label}
+                                    {item.name}
                                 </Link>
-                            </HoverLift>
-                        ))}
-                        <ThemeToggle />
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Mobile controls */}
-                    <div className="flex items-center gap-2 md:hidden">
-                        <ThemeToggle />
+
+                    {/* Right: External Links / Contact */}
+                    <div className="hidden md:flex items-center space-x-4">
+                        <a href="https://github.com/withziang" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-linear-text-secondary hover:text-linear-text-primary transition-colors">
+                            <FiGithub size={18}/>
+                        </a>
+                        <a href="https://linkedin.com/in/ziang-wang2021/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-linear-text-secondary hover:text-linear-text-primary transition-colors">
+                            <FiLinkedin size={18}/>
+                        </a>
+
+                    </div>
+
+                    {/* Mobile Menu Button */}
+                    <div className="md:hidden flex items-center">
                         <button
-                            onClick={toggleSidebar}
-                            className="rounded-md p-2 text-darter-gray dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-darter-dark-gray focus:outline-none focus:ring-2 focus:ring-inset focus:ring-darter-purple"
-                            aria-label={isSidebarOpen ? "Close menu" : "Open menu"}
+                            onClick={toggleMenu}
+                            className="p-2 rounded-md text-linear-text-secondary hover:bg-white/5 hover:text-linear-text-primary focus:outline-none"
+                            aria-label="Toggle menu"
                         >
-                            {isSidebarOpen ? <FaTimes className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
+                            {isOpen ? <FiX size={20} /> : <FiMenu size={20} />}
                         </button>
                     </div>
                 </div>
-            </header>
+            </div>
 
-            {/* ===== Sidebar Overlay ===== */}
-            {isSidebarOpen && (
-                <div
-                    className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
-                    onClick={closeSidebar}
-                />
-            )}
-
-            {/* ===== Sidebar Panel ===== */}
-            <aside
-                className={`fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-darter-dark-gray shadow-xl transform transition-transform duration-300 ease-in-out rounded-tr-xl rounded-br-xl overflow-y-auto ${
-                    isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-                }`}
-            >
-                {/* Sidebar Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-darter-dark-gray">
-                    <Link
-                        href="/"
-                        onClick={closeSidebar}
-                        className="flex items-center gap-2 text-lg font-bold text-darter-navy dark:text-white"
+            {/* Mobile Menu Panel */}
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        className="md:hidden absolute top-16 left-0 right-0 bg-linear-gray-dark/95 backdrop-blur-lg shadow-xl border-t border-linear-border"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2, ease: 'easeInOut' }}
                     >
-                        <Image src="/darter-logo.png" alt="Logo" width={24} height={24} />
-                        <span>ZW • Dev</span>
-                    </Link>
-                    <button
-                        onClick={closeSidebar}
-                        className="p-2 rounded-md text-darter-gray dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-darter-dark-gray focus:outline-none focus:ring-2 focus:ring-darter-purple"
-                    >
-                        <FaTimes className="h-5 w-5" />
-                    </button>
-                </div>
-
-                {/* Sidebar Nav Links */}
-                <nav className="flex flex-col p-4 space-y-3">
-                    {navLinks.map(({ href, label }) => (
-                        <Link
-                            key={href}
-                            href={href}
-                            onClick={closeSidebar}
-                            className="px-3 py-2 rounded text-darter-navy dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-darter-dark-gray transition-colors"
-                        >
-                            {label}
-                        </Link>
-                    ))}
-                </nav>
-            </aside>
-        </>
+                        <ul className="flex flex-col px-4 pt-2 pb-4 space-y-1">
+                            {navItems.map((item) => (
+                                <li key={item.name}>
+                                    <Link
+                                        href={item.path}
+                                        onClick={(e) => handleLinkClick(e, item.path)}
+                                        className="block px-3 py-2 rounded-md text-base font-medium text-linear-text-secondary hover:bg-white/5 hover:text-linear-text-primary transition-colors duration-200"
+                                    >
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                            {/* Mobile external links */}
+                            <li className="pt-4 border-t border-linear-border mt-2">
+                                <a href="https://github.com/withziang" target="_blank" rel="noopener noreferrer" className="flex items-center px-3 py-2 text-linear-text-secondary hover:text-linear-text-primary"> <FiGithub className="mr-2" size={18}/> GitHub </a>
+                            </li>
+                            <li>
+                                <a href="https://linkedin.com/in/ziang-wang2021/" target="_blank" rel="noopener noreferrer" className="flex items-center px-3 py-2 text-linear-text-secondary hover:text-linear-text-primary"> <FiLinkedin className="mr-2" size={18}/> LinkedIn </a>
+                            </li>
+                        </ul>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </nav>
     );
-};
+}
