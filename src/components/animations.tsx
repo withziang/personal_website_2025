@@ -1,14 +1,15 @@
+// src/components/animations.tsx
 'use client';
 
-import { motion, Variants } from 'framer-motion';
+import { motion, Variants, Transition } from 'framer-motion';
 import React from 'react';
 
 interface AnimatedSectionProps {
     children: React.ReactNode;
     className?: string;
     variants?: Variants;
-    transition?: object;
-    animationDelay?: number; // Add this prop
+    animationDelay?: number;
+    id?: string;
 }
 
 const defaultVariants: Variants = {
@@ -18,7 +19,7 @@ const defaultVariants: Variants = {
         y: 0,
         transition: {
             duration: 0.6,
-            ease: [0.6, -0.05, 0.01, 0.99] // Smooth ease
+            ease: [0.6, -0.05, 0.01, 0.99]
         }
     },
 };
@@ -26,23 +27,35 @@ const defaultVariants: Variants = {
 export const AnimatedSection: React.FC<AnimatedSectionProps> = ({
                                                                     children,
                                                                     className,
+                                                                    id, // Destructure id
                                                                     variants = defaultVariants,
-                                                                    animationDelay = 0 // Default no delay
+                                                                    animationDelay = 0
                                                                 }) => {
-    // If animationDelay is provided, adjust the transition
+
+    // Define a type for the visible part of variants if it has a transition
+    type VisibleVariant = {
+        opacity?: number;
+        y?: number | string;
+        scale?: number;
+        x?: number | string;
+        // Add other motion props you might use in 'visible'
+        transition?: Transition; // Use Framer Motion's Transition type
+    };
+
     const customVariants = {
         ...variants,
         visible: {
-            ...(variants.visible as object),
+            ...(variants.visible as VisibleVariant), 
             transition: {
-                ...(variants.visible && (variants.visible as any).transition),
-                delay: animationDelay, // Apply the delay
+                ...(variants.visible && (variants.visible as VisibleVariant).transition), // Access transition safely
+                delay: animationDelay,
             }
         }
     };
 
     return (
         <motion.section
+            id={id} // Pass the id to the motion.section
             className={className}
             variants={animationDelay > 0 ? customVariants : variants}
             initial="hidden"
@@ -54,45 +67,46 @@ export const AnimatedSection: React.FC<AnimatedSectionProps> = ({
     );
 };
 
-// Example of a staggered list animation
+
 export const StaggeredList: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => {
     const containerVariants: Variants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.15,
+                staggerChildren: 0.1,
+                delayChildren: 0.1,
             },
         },
     };
 
     return (
-        <motion.div
+        <motion.ul
             className={className}
             variants={containerVariants}
             initial="hidden"
-            animate="visible" // Use animate for initial load, or whileInView for scroll-triggered
-            // whileInView="visible"
-            // viewport={{ once: true, amount: 0.1 }}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
         >
             {children}
-        </motion.div>
+        </motion.ul>
     );
 };
 
+// Example of a staggered list item
 export const StaggeredListItem: React.FC<{ children: React.ReactNode, className?: string }> = ({ children, className }) => {
     const itemVariants: Variants = {
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0, x: -15 },
         visible: {
             opacity: 1,
-            y: 0,
-            transition: { type: 'spring', stiffness: 100, damping: 12 },
+            x: 0,
+            transition: { type: 'spring', stiffness: 120, damping: 15 },
         },
     };
 
     return (
-        <motion.div className={className} variants={itemVariants}>
+        <motion.li className={className} variants={itemVariants}>
             {children}
-        </motion.div>
+        </motion.li>
     );
 };

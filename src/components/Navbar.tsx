@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { FiMenu, FiX, FiGithub, FiLinkedin } from 'react-icons/fi'; // Using specific icons
 import { motion, AnimatePresence } from 'framer-motion';
 
