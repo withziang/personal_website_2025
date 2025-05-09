@@ -33,7 +33,7 @@ export default function Hero() {
                 className="text-4.5xl md:text-5.5xl font-semibold text-linear-text-primary tracking-tighter mb-4 leading-tight"
                 variants={itemVariants}
             >
-                Hi, I am Ziang <br className="hidden md:block" />
+                Hi, I am Ziang <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-linear-accent to-accent-cyan">
           A Software Engineer
         </span>
@@ -43,7 +43,7 @@ export default function Hero() {
                 className="text-base md:text-lg text-linear-text-secondary mb-8 max-w-xl mx-auto"
                 variants={itemVariants}
             >
-                who focus on system and performance.
+                who focuses on system and performance.
                 Expertise in C++, backend architecture, and low-level kernel programming. Building efficient and scalable solutions.
             </motion.p>
 

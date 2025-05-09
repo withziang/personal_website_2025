@@ -2,8 +2,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useState} from 'react';
-import { FiMenu, FiX, FiGithub, FiLinkedin } from 'react-icons/fi'; // Using specific icons
+import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { FiMenu, FiX, FiGithub, FiLinkedin } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
@@ -15,27 +16,35 @@ const navItems = [
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const router = useRouter(); // Initialize router
+    const pathname = usePathname(); // Get current pathname
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
     const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, path: string) => {
-        setIsOpen(false);
-        if (path.startsWith('#')) {
-            e.preventDefault();
-            const targetId = path.substring(1);
-            const targetElement = document.getElementById(targetId);
-            if (targetElement) {
-                // Offset slightly for the fixed navbar height
-                const offset = 80; // Adjust as needed
-                const bodyRect = document.body.getBoundingClientRect().top;
-                const elementRect = targetElement.getBoundingClientRect().top;
-                const elementPosition = elementRect - bodyRect;
-                const offsetPosition = elementPosition - offset;
+        setIsOpen(false); // Always close menu
 
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
+        if (path.startsWith('#')) {
+            e.preventDefault(); // Prevent default for hash links to handle manually
+            const targetId = path.substring(1);
+
+            if (pathname === '/') { // If already on the homepage
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 80; // Adjust as needed
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = targetElement.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            } else {
+
+                router.push('/' + path);
             }
         }
     };
@@ -48,8 +57,7 @@ export default function Navbar() {
             <div className="w-full max-w-6xl mx-auto px-4 h-full">
                 <div className="flex items-center justify-between h-full">
                     {/* Left: Logo */}
-                    <Link href="/" className="flex items-center text-sm font-medium text-linear-text-primary">
-                        {/* Simplified Logo (replace with SVG later if needed) */}
+                    <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center text-sm font-medium text-linear-text-primary">
                         <span className="w-5 h-5 mr-2 rounded-full bg-gradient-to-br from-linear-accent to-accent-cyan"></span>
                         Ziang Wang
                     </Link>
@@ -60,7 +68,7 @@ export default function Navbar() {
                             {navItems.map((item) => (
                                 <Link
                                     key={item.name}
-                                    href={item.path}
+                                    href={item.path.startsWith('#') && pathname !== '/' ? '/' + item.path : item.path}
                                     onClick={(e) => handleLinkClick(e, item.path)}
                                     className="px-3 py-1 rounded-full text-xs font-medium text-linear-text-secondary hover:bg-white/5 hover:text-linear-text-primary transition-colors duration-150"
                                 >
@@ -79,7 +87,6 @@ export default function Navbar() {
                         <a href="https://linkedin.com/in/ziang-wang2021/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-linear-text-secondary hover:text-linear-text-primary transition-colors">
                             <FiLinkedin size={18}/>
                         </a>
-
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -109,7 +116,7 @@ export default function Navbar() {
                             {navItems.map((item) => (
                                 <li key={item.name}>
                                     <Link
-                                        href={item.path}
+                                        href={item.path.startsWith('#') && pathname !== '/' ? '/' + item.path : item.path}
                                         onClick={(e) => handleLinkClick(e, item.path)}
                                         className="block px-3 py-2 rounded-md text-base font-medium text-linear-text-secondary hover:bg-white/5 hover:text-linear-text-primary transition-colors duration-200"
                                     >
